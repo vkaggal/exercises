@@ -1,0 +1,21 @@
+{
+  "id": "vkaggal/exercise-your-first-machine-learning-model",
+  "id_no": 10762946,
+  "title": "Exercise: Your First Machine Learning Model",
+  "code_file": "exercise-your-first-machine-learning-model.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "iabhishekofficial/mobile-price-classification",
+    "pavanraj159/predicting-a-pulsar-star",
+    "dansbecker/melbourne-housing-snapshot"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "home-data-for-ml-course"
+  ]
+}

@@ -7,51 +7,84 @@
 # 
 
 # ## Recap
-# So far, you have loaded your data and reviewed it with the following code. Run this cell to set up your coding environment where the previous step left off.
+# You've built a model. In this exercise you will test how good your model is.
+# 
+# Run the cell below to set up your coding environment where the previous exercise left off.
 
 # In[ ]:
 
 
 # Code you have previously used to load data
 import pandas as pd
+from sklearn.tree import DecisionTreeRegressor
 
 # Path of the file to read
 iowa_file_path = '../input/home-data-for-ml-course/train.csv'
 
 home_data = pd.read_csv(iowa_file_path)
+y = home_data.SalePrice
+feature_columns = ['LotArea', 'YearBuilt', '1stFlrSF', '2ndFlrSF', 'FullBath', 'BedroomAbvGr', 'TotRmsAbvGrd']
+X = home_data[feature_columns]
+
+# Specify Model
+iowa_model = DecisionTreeRegressor()
+# Fit Model
+iowa_model.fit(X, y)
+
+print("First in-sample predictions:", iowa_model.predict(X.head()))
+print("Actual target values for those homes:", y.head().tolist())
 
 # Set up code checking
 from learntools.core import binder
 binder.bind(globals())
-from learntools.machine_learning.ex3 import *
-
+from learntools.machine_learning.ex4 import *
 print("Setup Complete")
-
-
-# In[ ]:
-
-
-#home_data.describe()
-home_data.columns
 
 
 # # Exercises
 # 
-# ## Step 1: Specify Prediction Target
-# Select the target variable, which corresponds to the sales price. Save this to a new variable called `y`. You'll need to print a list of the columns to find the name of the column you need.
+# ## Step 1: Split Your Data
+# Use the `train_test_split` function to split up your data.
+# 
+# Give it the argument `random_state=1` so the `check` functions know what to expect when verifying your code.
+# 
+# Recall, your features are loaded in the DataFrame **X** and your target is loaded in **y**.
 # 
 
 # In[ ]:
 
 
-# print the list of columns in the dataset to find the name of the prediction target
-home_data.columns
+from sklearn.model_selection import train_test_split
+
+# split data into training and validation data, for both features and target
+# The split is based on a random number generator. Supplying a numeric value to
+# the random_state argument guarantees we get the same split every time we
+# run this script.
+train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = 0)
+# Define model
+melbourne_model = DecisionTreeRegressor()
+# Fit model
+melbourne_model.fit(train_X, train_y)
+
+# get predicted prices on validation data
+val_predictions = melbourne_model.predict(val_X)
+print(mean_absolute_error(val_y, val_predictions))
 
 
 # In[ ]:
 
 
-y = home_data.SalePrice
+
+
+
+# In[ ]:
+
+
+# Import the train_test_split function and uncomment
+from sklearn.model_selection import train_test_split
+
+# fill in and uncomment
+train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = 1)
 
 # Check your answer
 step_1.check()
@@ -65,30 +98,26 @@ step_1.check()
 # step_1.solution()
 
 
-# ## Step 2: Create X
-# Now you will create a DataFrame called `X` holding the predictive features.
+# ## Step 2: Specify and Fit the Model
 # 
-# Since you want only some columns from the original data, you'll first create a list with the names of the columns you want in `X`.
-# 
-# You'll use just the following columns in the list (you can copy and paste the whole list to save some typing, though you'll still need to add quotes):
-#     * LotArea
-#     * YearBuilt
-#     * 1stFlrSF
-#     * 2ndFlrSF
-#     * FullBath
-#     * BedroomAbvGr
-#     * TotRmsAbvGrd
-# 
-# After you've created that list of features, use it to create the DataFrame that you'll use to fit the model.
+# Create a `DecisionTreeRegressor` model and fit it to the relevant data.
+# Set `random_state` to 1 again when creating the model.
 
 # In[ ]:
 
 
-# Create the list of features below
-feature_names = ['LotArea', 'YearBuilt', '1stFlrSF', '2ndFlrSF', 'FullBath', 'BedroomAbvGr', 'TotRmsAbvGrd']
+# You imported DecisionTreeRegressor in your last exercise
+# and that code has been copied to the setup code above. So, no need to
+# import it again
+import pandas as pd
+from sklearn.tree import DecisionTreeRegressor
 
-# Select data corresponding to features in feature_names
-X = home_data[feature_names]
+
+# Specify the model
+iowa_model = DecisionTreeRegressor(random_state=1)
+
+# Fit iowa_model with the training data.
+iowa_model.fit(train_X, train_y)
 
 # Check your answer
 step_2.check()
@@ -101,37 +130,14 @@ step_2.check()
 # step_2.solution()
 
 
-# ## Review Data
-# Before building a model, take a quick look at **X** to verify it looks sensible
-
-# In[ ]:
-
-
-# Review data
-# print description or statistics from X
-#print(_)
-#X.describe
-
-# print the top few lines
-#print(_)
-X.head()
-
-
-# ## Step 3: Specify and Fit Model
-# Create a `DecisionTreeRegressor` and save it iowa_model. Ensure you've done the relevant import from sklearn to run this command.
+# ## Step 3: Make Predictions with Validation data
 # 
-# Then fit the model you just created using the data in `X` and `y` that you saved above.
 
 # In[ ]:
 
 
-from sklearn.tree import DecisionTreeRegressor
-#specify the model. 
-#For model reproducibility, set a numeric value for random_state when specifying the model
-iowa_model = DecisionTreeRegressor(random_state=42)
-
-# Fit the model
-iowa_model.fit(X, y)
+# Predict with all validation observations
+val_predictions = iowa_model.predict(val_X)
 
 # Check your answer
 step_3.check()
@@ -144,14 +150,38 @@ step_3.check()
 # step_3.solution()
 
 
-# ## Step 4: Make Predictions
-# Make predictions with the model's `predict` command using `X` as the data. Save the results to a variable called `predictions`.
+# Inspect your predictions and actual values from validation data.
 
 # In[ ]:
 
 
-predictions = iowa_model.predict(X)
-print(predictions)
+type(val_predictions)
+
+
+# In[ ]:
+
+
+# print the top few validation predictions
+print("validation prediction: ", val_predictions[:5])
+# print the top few actual prices from validation data
+print("validation:", val_y.head().tolist)
+
+
+# What do you notice that is different from what you saw with in-sample predictions (which are printed after the top code cell in this page).
+# 
+# Do you remember why validation predictions differ from in-sample (or training) predictions? This is an important idea from the last lesson.
+# 
+# ## Step 4: Calculate the Mean Absolute Error in Validation Data
+# 
+
+# In[ ]:
+
+
+from sklearn.metrics import mean_absolute_error
+val_mae = mean_absolute_error(val_y, val_predictions)
+
+# uncomment following line to see the validation_mae
+print(val_mae)
 
 # Check your answer
 step_4.check()
@@ -164,23 +194,11 @@ step_4.check()
 # step_4.solution()
 
 
-# ## Think About Your Results
-# 
-# Use the `head` method to compare the top few predictions to the actual home values (in `y`) for those same homes. Anything surprising?
-# 
-
-# In[ ]:
-
-
-# You can write code in this cell
-print(iowa_model.predict(X.head(4)),"\n",y.head(4))
-
-
-# It's natural to ask how accurate the model's predictions will be and how you can improve that. That will be you're next step.
+# Is that MAE good?  There isn't a general rule for what values are good that applies across applications. But you'll see how to use (and improve) this number in the next step.
 # 
 # # Keep Going
 # 
-# You are ready for **[Model Validation](https://www.kaggle.com/dansbecker/model-validation).**
+# You are ready for **[Underfitting and Overfitting](https://www.kaggle.com/dansbecker/underfitting-and-overfitting).**
 # 
 
 # ---

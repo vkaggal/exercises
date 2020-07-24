@@ -7,7 +7,7 @@
 # 
 
 # ## Recap
-# You've built your first model, and now it's time to optimize the size of the tree to make better predictions. Run this cell to set up your coding environment where the previous step left off.
+# Here's the code you've written so far.
 
 # In[ ]:
 
@@ -40,46 +40,45 @@ iowa_model.fit(train_X, train_y)
 # Make validation predictions and calculate mean absolute error
 val_predictions = iowa_model.predict(val_X)
 val_mae = mean_absolute_error(val_predictions, val_y)
-print("Validation MAE: {:,.0f}".format(val_mae))
+print("Validation MAE when not specifying max_leaf_nodes: {:,.0f}".format(val_mae))
+
+# Using best value for max_leaf_nodes
+iowa_model = DecisionTreeRegressor(max_leaf_nodes=100, random_state=1)
+iowa_model.fit(train_X, train_y)
+val_predictions = iowa_model.predict(val_X)
+val_mae = mean_absolute_error(val_predictions, val_y)
+print("Validation MAE for best value of max_leaf_nodes: {:,.0f}".format(val_mae))
+
 
 # Set up code checking
 from learntools.core import binder
 binder.bind(globals())
-from learntools.machine_learning.ex5 import *
+from learntools.machine_learning.ex6 import *
 print("\nSetup complete")
 
 
 # # Exercises
-# You could write the function `get_mae` yourself. For now, we'll supply it. This is the same function you read about in the previous lesson. Just run the cell below.
+# Data science isn't always this easy. But replacing the decision tree with a Random Forest is going to be an easy win.
+
+# ## Step 1: Use a Random Forest
 
 # In[ ]:
 
 
-def get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y):
-    model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes, random_state=0)
-    model.fit(train_X, train_y)
-    preds_val = model.predict(val_X)
-    mae = mean_absolute_error(val_y, preds_val)
-    return(mae)
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error
 
+# Define the model. Set random_state to 1
+rf_model = RandomForestRegressor(random_state=1)
 
-# ## Step 1: Compare Different Tree Sizes
-# Write a loop that tries the following values for *max_leaf_nodes* from a set of possible values.
-# 
-# Call the *get_mae* function on each value of max_leaf_nodes. Store the output in some way that allows you to select the value of `max_leaf_nodes` that gives the most accurate model on your data.
+# fit your model
+rf_model.fit(train_X, train_y)
 
-# In[ ]:
+val_preds = rf_model.predict(val_X)
+# Calculate the mean absolute error of your Random Forest model on the validation data
+rf_val_mae = mean_absolute_error(val_y, val_preds)
 
-
-candidate_max_leaf_nodes = [5, 25, 50, 100, 250, 500]
-# Write loop to find the ideal tree size from candidate_max_leaf_nodes
-
-for leaf_node_size in candidate_max_leaf_nodes:
-    mae = get_mae(leaf_node_size, train_X, val_X, train_y, val_y)
-    print(f"Mean Absolute Error: {mae:.0f}", f" tree size: {leaf_node_size:d}")
-
-# Store the best value of max_leaf_nodes (it will be either 5, 25, 50, 100, 250 or 500)
-best_tree_size = 100
+print("Validation MAE for Random Forest Model: {}".format(rf_val_mae))
 
 # Check your answer
 step_1.check()
@@ -93,34 +92,13 @@ step_1.check()
 # step_1.solution()
 
 
-# ## Step 2: Fit Model Using All Data
-# You know the best tree size. If you were going to deploy this model in practice, you would make it even more accurate by using all of the data and keeping that tree size.  That is, you don't need to hold out the validation data now that you've made all your modeling decisions.
-
-# In[ ]:
-
-
-# Fill in argument to make optimal size and uncomment
-final_model = DecisionTreeRegressor(max_leaf_nodes=100, random_state=0)
-
-# fit the final model and uncomment the next two lines
-final_model.fit(X, y)
-
-# Check your answer
-step_2.check()
-
-
-# In[ ]:
-
-
-# step_2.hint()
-# step_2.solution()
-
-
-# You've tuned this model and improved your results. But we are still using Decision Tree models, which are not very sophisticated by modern machine learning standards. In the next step you will learn to use Random Forests to improve your models even more.
+# So far, you have followed specific instructions at each step of your project. This helped learn key ideas and build your first model, but now you know enough to try things on your own. 
+# 
+# Machine Learning competitions are a great way to try your own ideas and learn more as you independently navigate a machine learning project. 
 # 
 # # Keep Going
 # 
-# You are ready for **[Random Forests](https://www.kaggle.com/dansbecker/random-forests).**
+# You are ready for **[Machine Learning Competitions](https://www.kaggle.com/kernels/fork/1259198).**
 # 
 
 # ---

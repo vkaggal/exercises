@@ -1,7 +1,7 @@
 {
-  "id": "vkaggal/exercise-underfitting-and-overfitting",
-  "id_no": 10802151,
-  "title": "Exercise: Underfitting and Overfitting",
+  "id": "vkaggal/exercise-random-forests",
+  "id_no": 10852627,
+  "title": "Exercise: Random Forests",
   "code_file": "exercise-your-first-machine-learning-model.ipynb",
   "language": "python",
   "kernel_type": "notebook",

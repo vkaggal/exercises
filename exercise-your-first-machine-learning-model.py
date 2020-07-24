@@ -7,84 +7,79 @@
 # 
 
 # ## Recap
-# You've built a model. In this exercise you will test how good your model is.
-# 
-# Run the cell below to set up your coding environment where the previous exercise left off.
+# You've built your first model, and now it's time to optimize the size of the tree to make better predictions. Run this cell to set up your coding environment where the previous step left off.
 
 # In[ ]:
 
 
 # Code you have previously used to load data
 import pandas as pd
+from sklearn.metrics import mean_absolute_error
+from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeRegressor
+
 
 # Path of the file to read
 iowa_file_path = '../input/home-data-for-ml-course/train.csv'
 
 home_data = pd.read_csv(iowa_file_path)
+# Create target object and call it y
 y = home_data.SalePrice
-feature_columns = ['LotArea', 'YearBuilt', '1stFlrSF', '2ndFlrSF', 'FullBath', 'BedroomAbvGr', 'TotRmsAbvGrd']
-X = home_data[feature_columns]
+# Create X
+features = ['LotArea', 'YearBuilt', '1stFlrSF', '2ndFlrSF', 'FullBath', 'BedroomAbvGr', 'TotRmsAbvGrd']
+X = home_data[features]
+
+# Split into validation and training data
+train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=1)
 
 # Specify Model
-iowa_model = DecisionTreeRegressor()
+iowa_model = DecisionTreeRegressor(random_state=1)
 # Fit Model
-iowa_model.fit(X, y)
+iowa_model.fit(train_X, train_y)
 
-print("First in-sample predictions:", iowa_model.predict(X.head()))
-print("Actual target values for those homes:", y.head().tolist())
+# Make validation predictions and calculate mean absolute error
+val_predictions = iowa_model.predict(val_X)
+val_mae = mean_absolute_error(val_predictions, val_y)
+print("Validation MAE: {:,.0f}".format(val_mae))
 
 # Set up code checking
 from learntools.core import binder
 binder.bind(globals())
-from learntools.machine_learning.ex4 import *
-print("Setup Complete")
+from learntools.machine_learning.ex5 import *
+print("\nSetup complete")
 
 
 # # Exercises
-# 
-# ## Step 1: Split Your Data
-# Use the `train_test_split` function to split up your data.
-# 
-# Give it the argument `random_state=1` so the `check` functions know what to expect when verifying your code.
-# 
-# Recall, your features are loaded in the DataFrame **X** and your target is loaded in **y**.
-# 
+# You could write the function `get_mae` yourself. For now, we'll supply it. This is the same function you read about in the previous lesson. Just run the cell below.
 
 # In[ ]:
 
 
-from sklearn.model_selection import train_test_split
+def get_mae(max_leaf_nodes, train_X, val_X, train_y, val_y):
+    model = DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes, random_state=0)
+    model.fit(train_X, train_y)
+    preds_val = model.predict(val_X)
+    mae = mean_absolute_error(val_y, preds_val)
+    return(mae)
 
-# split data into training and validation data, for both features and target
-# The split is based on a random number generator. Supplying a numeric value to
-# the random_state argument guarantees we get the same split every time we
-# run this script.
-train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = 0)
-# Define model
-melbourne_model = DecisionTreeRegressor()
-# Fit model
-melbourne_model.fit(train_X, train_y)
 
-# get predicted prices on validation data
-val_predictions = melbourne_model.predict(val_X)
-print(mean_absolute_error(val_y, val_predictions))
-
+# ## Step 1: Compare Different Tree Sizes
+# Write a loop that tries the following values for *max_leaf_nodes* from a set of possible values.
+# 
+# Call the *get_mae* function on each value of max_leaf_nodes. Store the output in some way that allows you to select the value of `max_leaf_nodes` that gives the most accurate model on your data.
 
 # In[ ]:
 
 
+candidate_max_leaf_nodes = [5, 25, 50, 100, 250, 500]
+# Write loop to find the ideal tree size from candidate_max_leaf_nodes
 
+for leaf_node_size in candidate_max_leaf_nodes:
+    mae = get_mae(leaf_node_size, train_X, val_X, train_y, val_y)
+    print(f"Mean Absolute Error: {mae:.0f}", f" tree size: {leaf_node_size:d}")
 
-
-# In[ ]:
-
-
-# Import the train_test_split function and uncomment
-from sklearn.model_selection import train_test_split
-
-# fill in and uncomment
-train_X, val_X, train_y, val_y = train_test_split(X, y, random_state = 1)
+# Store the best value of max_leaf_nodes (it will be either 5, 25, 50, 100, 250 or 500)
+best_tree_size = 100
 
 # Check your answer
 step_1.check()
@@ -98,26 +93,17 @@ step_1.check()
 # step_1.solution()
 
 
-# ## Step 2: Specify and Fit the Model
-# 
-# Create a `DecisionTreeRegressor` model and fit it to the relevant data.
-# Set `random_state` to 1 again when creating the model.
+# ## Step 2: Fit Model Using All Data
+# You know the best tree size. If you were going to deploy this model in practice, you would make it even more accurate by using all of the data and keeping that tree size.  That is, you don't need to hold out the validation data now that you've made all your modeling decisions.
 
 # In[ ]:
 
 
-# You imported DecisionTreeRegressor in your last exercise
-# and that code has been copied to the setup code above. So, no need to
-# import it again
-import pandas as pd
-from sklearn.tree import DecisionTreeRegressor
+# Fill in argument to make optimal size and uncomment
+final_model = DecisionTreeRegressor(max_leaf_nodes=100, random_state=0)
 
-
-# Specify the model
-iowa_model = DecisionTreeRegressor(random_state=1)
-
-# Fit iowa_model with the training data.
-iowa_model.fit(train_X, train_y)
+# fit the final model and uncomment the next two lines
+final_model.fit(X, y)
 
 # Check your answer
 step_2.check()
@@ -130,75 +116,11 @@ step_2.check()
 # step_2.solution()
 
 
-# ## Step 3: Make Predictions with Validation data
-# 
-
-# In[ ]:
-
-
-# Predict with all validation observations
-val_predictions = iowa_model.predict(val_X)
-
-# Check your answer
-step_3.check()
-
-
-# In[ ]:
-
-
-# step_3.hint()
-# step_3.solution()
-
-
-# Inspect your predictions and actual values from validation data.
-
-# In[ ]:
-
-
-type(val_predictions)
-
-
-# In[ ]:
-
-
-# print the top few validation predictions
-print("validation prediction: ", val_predictions[:5])
-# print the top few actual prices from validation data
-print("validation:", val_y.head().tolist)
-
-
-# What do you notice that is different from what you saw with in-sample predictions (which are printed after the top code cell in this page).
-# 
-# Do you remember why validation predictions differ from in-sample (or training) predictions? This is an important idea from the last lesson.
-# 
-# ## Step 4: Calculate the Mean Absolute Error in Validation Data
-# 
-
-# In[ ]:
-
-
-from sklearn.metrics import mean_absolute_error
-val_mae = mean_absolute_error(val_y, val_predictions)
-
-# uncomment following line to see the validation_mae
-print(val_mae)
-
-# Check your answer
-step_4.check()
-
-
-# In[ ]:
-
-
-# step_4.hint()
-# step_4.solution()
-
-
-# Is that MAE good?  There isn't a general rule for what values are good that applies across applications. But you'll see how to use (and improve) this number in the next step.
+# You've tuned this model and improved your results. But we are still using Decision Tree models, which are not very sophisticated by modern machine learning standards. In the next step you will learn to use Random Forests to improve your models even more.
 # 
 # # Keep Going
 # 
-# You are ready for **[Underfitting and Overfitting](https://www.kaggle.com/dansbecker/underfitting-and-overfitting).**
+# You are ready for **[Random Forests](https://www.kaggle.com/dansbecker/random-forests).**
 # 
 
 # ---

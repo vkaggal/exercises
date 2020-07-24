@@ -1,7 +1,7 @@
 {
-  "id": "vkaggal/vkaggal-exercise-model-validation",
-  "id_no": 10776420,
-  "title": "vkaggal_Exercise_Model_Validation",
+  "id": "vkaggal/exercise-underfitting-and-overfitting",
+  "id_no": 10802151,
+  "title": "Exercise: Underfitting and Overfitting",
   "code_file": "exercise-your-first-machine-learning-model.ipynb",
   "language": "python",
   "kernel_type": "notebook",
